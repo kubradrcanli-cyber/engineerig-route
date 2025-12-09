@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mühendislik Rotası (Engineering Route)</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="quiz-container" id="quizContainer">
+            <!-- Kullanıcı Adı Giriş Ekranı (Username Entry Screen) -->
+            <div class="username-section" id="usernameSection">
+                <div class="username-content">
+                    <h1>Mühendislik Rotası (Engineering Route)</h1>
+                    <p class="subtitle">İlk QR kodu okutun ve kullanıcı adınızı girin (Scan the first QR code and enter your username)</p>
+                    <div class="qr-scanner-container" id="qrScannerContainer">
+                        <div id="qr-reader"></div>
+                        <p class="qr-hint">QR kodu kameraya gösterin (Show QR code to camera)</p>
+                    </div>
+                    <div class="username-input-container" id="usernameInputContainer" style="display: none;">
+                        <input type="text" id="usernameInput" placeholder="Kullanıcı adınızı girin (Enter your username)" maxlength="20">
+                        <button id="startButton" class="btn btn-primary">Başla (Start)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Ekranı (Quiz Screen) -->
+            <div class="quiz-content" id="quizContent" style="display: none;">
+                <div class="quiz-header">
+                    <div class="header-top">
+                        <h1>Java Quiz</h1>
+                        <div class="timer-display" id="timerDisplay">00:00</div>
+                    </div>
+                    <div class="user-info">
+                        <span id="userNameDisplay"></span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressBar"></div>
+                    </div>
+                    <p class="question-counter">
+                        <span id="currentQuestion">1</span> / <span id="totalQuestions">3</span>
+                    </p>
+                </div>
+
+                <div class="question-section" id="questionSection">
+                    <h2 id="questionText" class="question-text"></h2>
+                    
+                    <div class="choices-container" id="choicesContainer">
+                        <!-- Seçenekler buraya dinamik olarak eklenecek (Choices will be added here dynamically) -->
+                    </div>
+
+                    <div class="feedback" id="feedback"></div>
+
+                    <!-- Bir sonraki QR kod konumu mesajı (Next QR code location message) -->
+                    <div class="next-qr-hint" id="nextQrHint" style="display: none;">
+                        <div class="hint-box">
+                            <h3>Bir Sonraki QR Kod (Next QR Code)</h3>
+                            <p id="nextQrLocation"></p>
+                        </div>
+                    </div>
+
+                    <div class="quiz-actions">
+                        <button id="scanNextQrButton" class="btn btn-primary" style="display: none;">
+                            Sonraki QR Kodu Okut (Scan Next QR Code)
+                        </button>
+                    </div>
+
+                    <!-- Quiz içindeki QR Scanner (QR Scanner in Quiz) -->
+                    <div class="qr-scanner-container" id="quizQrScannerContainer" style="display: none;">
+                        <div id="quiz-qr-reader"></div>
+                        <p class="qr-hint">QR kodu kameraya gösterin (Show QR code to camera)</p>
+                    </div>
+                </div>
+
+                <div class="results-section" id="resultsSection" style="display: none;">
+                    <div class="results-content">
+                        <h2>Quiz Tamamlandı! (Quiz Completed!)</h2>
+                        <div class="score-display">
+                            <div class="score-circle">
+                                <span id="scoreNumber">0</span>
+                                <span class="score-total">/ <span id="totalScore">3</span></span>
+                            </div>
+                            <p class="score-percentage" id="scorePercentage">0%</p>
+                            <p class="final-time">Süre (Time): <span id="finalTime">00:00</span></p>
+                        </div>
+                        <p class="thank-you-message">Katıldığınız için teşekkür ederiz! (Thank you for participating!)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+

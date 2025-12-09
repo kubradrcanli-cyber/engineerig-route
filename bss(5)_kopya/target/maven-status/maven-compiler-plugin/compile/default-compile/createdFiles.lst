@@ -1,0 +1,6 @@
+com\bss\quiz\config\CorsConfig.class
+com\bss\quiz\repository\QuizResultRepository.class
+com\bss\quiz\model\QuizResult.class
+com\bss\quiz\controller\QuizResultController.class
+com\bss\quiz\QuizApplication.class
+com\bss\quiz\service\QuizResultService.class

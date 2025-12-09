@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yönetici Paneli - Quiz Sonuçları (Admin Panel - Quiz Results)</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #667eea 0%, #4d95cb 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .admin-header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        .admin-controls {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .password-section {
+            margin-bottom: 20px;
+        }
+
+        .password-input {
+            padding: 12px 20px;
+            font-size: 1.1em;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            margin-right: 10px;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .results-table-container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .results-table th {
+            background: linear-gradient(135deg, #667eea 0%, #4d95cb 100%);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .results-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .rank-badge {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #4d95cb 100%);
+            color: white;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .rank-badge.gold {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #333;
+        }
+
+        .rank-badge.silver {
+            background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+            color: #333;
+        }
+
+        .rank-badge.bronze {
+            background: linear-gradient(135deg, #cd7f32 0%, #e6a857 100%);
+            color: white;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: #667eea;
+            margin: 0 0 10px 0;
+            font-size: 1.1em;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>🔐 Yönetici Paneli (Admin Panel)</h1>
+            <p>Quiz Sonuçları ve İstatistikler (Quiz Results and Statistics)</p>
+        </div>
+
+        <div class="admin-controls">
+            <div class="password-section">
+                <h2>Yönetici Girişi (Admin Login)</h2>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <input type="password" id="adminPassword" class="password-input" placeholder="Yönetici şifresini girin (Enter admin password)" />
+                    <button id="loginButton" class="btn btn-primary">Giriş Yap (Login)</button>
+                    <button id="logoutButton" class="btn btn-secondary hidden">Çıkış Yap (Logout)</button>
+                </div>
+                <div id="errorMessage" class="error-message hidden"></div>
+            </div>
+        </div>
+
+        <div id="adminContent" class="hidden">
+            <div class="stats-section">
+                <div class="stat-card">
+                    <h3>Toplam Katılımcı (Total Participants)</h3>
+                    <div class="stat-value" id="totalParticipants">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Ortalama Skor (Average Score)</h3>
+                    <div class="stat-value" id="averageScore">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Ortalama Süre (Average Time)</h3>
+                    <div class="stat-value" id="averageTime">0</div>
+                </div>
+            </div>
+
+            <div class="results-table-container">
+                <h2>Kullanıcı Sonuçları (User Results)</h2>
+                <p style="color: #666; margin-bottom: 20px;">
+                    Sıralama: En çok doğru cevap + En kısa süre → En az doğru cevap + En uzun süre (Ranking: Most correct answers + Shortest time → Least correct answers + Longest time)
+                </p>
+                <div id="resultsTableContainer">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Sıra (Rank)</th>
+                                <th>Kullanıcı Adı (Username)</th>
+                                <th>Doğru Cevap (Correct Answer)</th>
+                                <th>Toplam Soru (Total Questions)</th>
+                                <th>Süre (Time)</th>
+                                <th>Başarı Oranı (Success Rate)</th>
+                                <th>Tarih/Saat (Date/Time)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsTableBody">
+                            <tr>
+                                <td colspan="7" class="no-results">Henüz sonuç yok (No results yet)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Yönetici şifresi (güvenlik için daha sonra değiştirilmeli) (Admin password (should be changed later for security))
+        const ADMIN_PASSWORD = "bss6ekim!"; // Bu şifreyi değiştirin! (Change this password!)
+
+        const adminPasswordInput = document.getElementById('adminPassword');
+        const loginButton = document.getElementById('loginButton');
+        const logoutButton = document.getElementById('logoutButton');
+        const adminContent = document.getElementById('adminContent');
+        const errorMessage = document.getElementById('errorMessage');
+        const resultsTableBody = document.getElementById('resultsTableBody');
+        const totalParticipants = document.getElementById('totalParticipants');
+        const averageScore = document.getElementById('averageScore');
+        const averageTime = document.getElementById('averageTime');
+
+        // Giriş kontrolü (Login check)
+        function checkLogin() {
+            const isLoggedIn = sessionStorage.getItem('adminLoggedIn') === 'true';
+            if (isLoggedIn) {
+                showAdminContent();
+            }
+        }
+
+        // Giriş yap (Login)
+        loginButton.addEventListener('click', () => {
+            const password = adminPasswordInput.value;
+            if (password === ADMIN_PASSWORD) {
+                sessionStorage.setItem('adminLoggedIn', 'true');
+                adminPasswordInput.value = '';
+                errorMessage.classList.add('hidden');
+                showAdminContent();
+            } else {
+                errorMessage.textContent = 'Hatalı şifre! Lütfen doğru yönetici şifresini girin. (Incorrect password! Please enter the correct admin password.)';
+                errorMessage.classList.remove('hidden');
+            }
+        });
+
+        // Enter tuşu ile giriş (Login with Enter key)
+        adminPasswordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                loginButton.click();
+            }
+        });
+
+        // Çıkış yap (Logout)
+        logoutButton.addEventListener('click', () => {
+            sessionStorage.removeItem('adminLoggedIn');
+            adminContent.classList.add('hidden');
+            logoutButton.classList.add('hidden');
+            loginButton.classList.remove('hidden');
+            adminPasswordInput.value = '';
+        });
+
+        // Admin içeriğini göster (Show admin content)
+        function showAdminContent() {
+            adminContent.classList.remove('hidden');
+            logoutButton.classList.remove('hidden');
+            loginButton.classList.add('hidden');
+            loadResults();
+        }
+
+        // Sonuçları yükle ve sırala (PostgreSQL'den) (Load and sort results (from PostgreSQL))
+        async function loadResults() {
+            try {
+                // PostgreSQL'den sonuçları çek
+                const response = await fetch('http://localhost:8080/api/quiz/results');
+                
+                if (!response.ok) {
+                    throw new Error('API hatası: ' + response.statusText);
+                }
+                
+                const results = await response.json();
+                
+                // İstatistikleri çek
+                const statsResponse = await fetch('http://localhost:8080/api/quiz/stats');
+                const stats = await statsResponse.ok ? await statsResponse.json() : null;
+                
+                if (results.length === 0) {
+                    resultsTableBody.innerHTML = '<tr><td colspan="7" class="no-results">Henüz sonuç yok (No results yet)</td></tr>';
+                    totalParticipants.textContent = '0';
+                    averageScore.textContent = '0';
+                    averageTime.textContent = '0:00';
+                    return;
+                }
+
+                // İstatistikleri göster
+                if (stats) {
+                    totalParticipants.textContent = stats.totalParticipants || 0;
+                    averageScore.textContent = (stats.averageScore || 0).toFixed(1);
+                    averageTime.textContent = formatTime(Math.round(stats.averageTime || 0));
+                } else {
+                    // Fallback: manuel hesaplama
+                    const total = results.length;
+                    const avgScore = results.reduce((sum, r) => sum + r.score, 0) / total;
+                    const avgTime = results.reduce((sum, r) => sum + r.timeInSeconds, 0) / total;
+                    totalParticipants.textContent = total;
+                    averageScore.textContent = avgScore.toFixed(1);
+                    averageTime.textContent = formatTime(Math.round(avgTime));
+                }
+
+                // Tabloyu oluştur (sonuçlar zaten backend'de sıralanmış)
+                resultsTableBody.innerHTML = results.map((result, index) => {
+                    const rank = index + 1;
+                    const rankClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
+                    const percentage = Math.round((result.score / result.totalQuestions) * 100);
+                    const date = new Date(result.timestamp);
+                    const dateStr = date.toLocaleString('tr-TR');
+
+                    return `
+                        <tr>
+                            <td>
+                                <span class="rank-badge ${rankClass}">${rank}</span>
+                            </td>
+                            <td><strong>${escapeHtml(result.username)}</strong></td>
+                            <td>${result.score}</td>
+                            <td>${result.totalQuestions}</td>
+                            <td>${formatTime(result.timeInSeconds)}</td>
+                            <td>%${percentage}</td>
+                            <td>${dateStr}</td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Sonuçlar yüklenirken hata:', error);
+                // Hata durumunda localStorage'dan yükle (yedek)
+                loadResultsFromLocalStorage();
+            }
+        }
+        
+        // LocalStorage'dan yükle (yedek) (Load from LocalStorage (backup))
+        function loadResultsFromLocalStorage() {
+            const results = JSON.parse(localStorage.getItem('quizResults') || '[]');
+            
+            if (results.length === 0) {
+                resultsTableBody.innerHTML = '<tr><td colspan="7" class="no-results">Henüz sonuç yok (No results yet)</td></tr>';
+                totalParticipants.textContent = '0';
+                averageScore.textContent = '0';
+                averageTime.textContent = '0:00';
+                return;
+            }
+
+            // Sıralama: En çok doğru + En kısa süre → En az doğru + En uzun süre
+            results.sort((a, b) => {
+                if (b.score !== a.score) {
+                    return b.score - a.score;
+                }
+                return a.timeInSeconds - b.timeInSeconds;
+            });
+
+            // İstatistikleri hesapla
+            const total = results.length;
+            const avgScore = results.reduce((sum, r) => sum + r.score, 0) / total;
+            const avgTime = results.reduce((sum, r) => sum + r.timeInSeconds, 0) / total;
+
+            totalParticipants.textContent = total;
+            averageScore.textContent = avgScore.toFixed(1);
+            averageTime.textContent = formatTime(Math.round(avgTime));
+
+            // Tabloyu oluştur
+            resultsTableBody.innerHTML = results.map((result, index) => {
+                const rank = index + 1;
+                const rankClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
+                const percentage = Math.round((result.score / result.totalQuestions) * 100);
+                const date = new Date(result.timestamp);
+                const dateStr = date.toLocaleString('tr-TR');
+
+                return `
+                    <tr>
+                        <td>
+                            <span class="rank-badge ${rankClass}">${rank}</span>
+                        </td>
+                        <td><strong>${escapeHtml(result.username)}</strong></td>
+                        <td>${result.score}</td>
+                        <td>${result.totalQuestions}</td>
+                        <td>${formatTime(result.timeInSeconds)}</td>
+                        <td>%${percentage}</td>
+                        <td>${dateStr}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Süreyi formatla (Format time)
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        // HTML escape
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Sayfa yüklendiğinde kontrol et (Check on page load)
+        checkLogin();
+
+        // Her 5 saniyede bir sonuçları yenile (Refresh results every 5 seconds)
+        setInterval(() => {
+            if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+                loadResults();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
+

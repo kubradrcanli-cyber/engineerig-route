@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Kod Oluşturucu - Quiz Avı (QR Code Generator - Quiz Hunt)</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .qr-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+
+        .qr-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .qr-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .qr-code-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .qr-info {
+            text-align: center;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            color: #333;
+            word-break: break-all;
+        }
+
+        .location-hint {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: 5px;
+            color: #856404;
+            font-size: 0.95em;
+        }
+
+        .location-hint strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .instructions {
+            background: #d1ecf1;
+            border-left: 4px solid #0c5460;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 30px;
+        }
+
+        .instructions h3 {
+            color: #0c5460;
+            margin-bottom: 10px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            color: #0c5460;
+        }
+
+        .instructions li {
+            margin: 8px 0;
+        }
+
+        .btn-print {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-print:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+            .btn-print {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 QR Kod Oluşturucu (QR Code Generator)</h1>
+        <p class="subtitle">Quiz Avı için QR Kodlarınızı Oluşturun (Generate Your QR Codes for Quiz Hunt)</p>
+
+        <!-- İlk QR Kod (First QR Code) -->
+        <div class="qr-section">
+            <h3>🚀 İlk QR Kod (Başlangıç) (First QR Code (Start))</h3>
+            <div class="qr-content">
+                <div class="qr-code-container">
+                    <div id="qr-start"></div>
+                </div>
+                <div class="qr-info">İçerik (Content): <strong>start</strong></div>
+                <button class="btn-print" onclick="window.print()">Yazdır (Print)</button>
+            </div>
+            <div class="location-hint">
+                <strong>📍 Konum İpucu (Location Hint):</strong>
+                Bu QR kodu oyunun başlangıç noktasına yerleştirin. Kullanıcılar bu QR kodu okutarak oyuna başlayacak. (Place this QR code at the starting point of the game. Users will start the game by scanning this QR code.)
+            </div>
+        </div>
+
+        <!-- Soru QR Kodları (Question QR Codes) -->
+        <div class="qr-section">
+            <h3>1️⃣ Birinci Soru QR Kodu (First Question QR Code)</h3>
+            <div class="qr-content">
+                <div class="qr-code-container">
+                    <div id="qr1"></div>
+                </div>
+                <div class="qr-info">İçerik (Content): <strong>question-1</strong></div>
+                <button class="btn-print" onclick="window.print()">Yazdır (Print)</button>
+            </div>
+        </div>
+
+        <div class="qr-section">
+            <h3>2️⃣ İkinci Soru QR Kodu (Second Question QR Code)</h3>
+            <div class="qr-content">
+                <div class="qr-code-container">
+                    <div id="qr2"></div>
+                </div>
+                <div class="qr-info">İçerik (Content): <strong>question-2</strong></div>
+                <button class="btn-print" onclick="window.print()">Yazdır (Print)</button>
+            </div>
+            <div class="location-hint">
+                <strong>📍 Konum İpucu (Location Hint):</strong>
+                İkinci QR kod, giriş kapısının yanındaki duvarda asılıdır. (The second QR code is hung on the wall next to the entrance door.)
+            </div>
+        </div>
+
+        <div class="qr-section">
+            <h3>3️⃣ Üçüncü Soru QR Kodu (Third Question QR Code)</h3>
+            <div class="qr-content">
+                <div class="qr-code-container">
+                    <div id="qr3"></div>
+                </div>
+                <div class="qr-info">İçerik (Content): <strong>question-3</strong></div>
+                <button class="btn-print" onclick="window.print()">Yazdır (Print)</button>
+            </div>
+            <div class="location-hint">
+                <strong>📍 Konum İpucu (Location Hint):</strong>
+                Üçüncü QR kod, kütüphane masasının üzerinde bulunmaktadır. (The third QR code is located on the library table.)
+            </div>
+        </div>
+
+        <div class="qr-section">
+            <h3>4️⃣ Dördüncü Soru QR Kodu (Fourth Question QR Code)</h3>
+            <div class="qr-content">
+                <div class="qr-code-container">
+                    <div id="qr4"></div>
+                </div>
+                <div class="qr-info">İçerik (Content): <strong>question-4</strong></div>
+                <button class="btn-print" onclick="window.print()">Yazdır (Print)</button>
+            </div>
+            <div class="location-hint">
+                <strong>📍 Konum İpucu (Location Hint):</strong>
+                Dördüncü QR kod, laboratuvar kapısının üzerinde yer almaktadır. (The fourth QR code is located above the laboratory door.)
+            </div>
+        </div>
+
+        <div class="qr-section">
+            <h3>5️⃣ Beşinci Soru QR Kodu (Fifth Question QR Code)</h3>
+            <div class="qr-content">
+                <div class="qr-code-container">
+                    <div id="qr5"></div>
+                </div>
+                <div class="qr-info">İçerik (Content): <strong>question-5</strong></div>
+                <button class="btn-print" onclick="window.print()">Yazdır (Print)</button>
+            </div>
+            <div class="location-hint">
+                <strong>📍 Konum İpucu (Location Hint):</strong>
+                Beşinci QR kod, koridorun sonundaki pencerenin yanında bulunmaktadır. (The fifth QR code is located next to the window at the end of the corridor.)
+            </div>
+        </div>
+
+        <div class="qr-section">
+            <h3>6️⃣ Altıncı Soru QR Kodu (Sixth Question QR Code)</h3>
+            <div class="qr-content">
+                <div class="qr-code-container">
+                    <div id="qr6"></div>
+                </div>
+                <div class="qr-info">İçerik (Content): <strong>question-6</strong></div>
+                <button class="btn-print" onclick="window.print()">Yazdır (Print)</button>
+            </div>
+            <div class="location-hint">
+                <strong>📍 Konum İpucu (Location Hint):</strong>
+                Altıncı QR kod, merdivenlerin başında, duvarda asılıdır. (The sixth QR code is hung on the wall at the beginning of the stairs.)
+            </div>
+        </div>
+
+        <div class="qr-section">
+            <h3>7️⃣ Yedinci Soru QR Kodu (Seventh Question QR Code)</h3>
+            <div class="qr-content">
+                <div class="qr-code-container">
+                    <div id="qr7"></div>
+                </div>
+                <div class="qr-info">İçerik (Content): <strong>question-7</strong></div>
+                <button class="btn-print" onclick="window.print()">Yazdır (Print)</button>
+            </div>
+            <div class="location-hint">
+                <strong>📍 Konum İpucu (Location Hint):</strong>
+                Yedinci QR kod, ikinci katın giriş kapısının yanında yer almaktadır. (The seventh QR code is located next to the entrance door of the second floor.)
+            </div>
+        </div>
+
+        <div class="qr-section">
+            <h3>8️⃣ Sekizinci Soru QR Kodu (Eighth Question QR Code)</h3>
+            <div class="qr-content">
+                <div class="qr-code-container">
+                    <div id="qr8"></div>
+                </div>
+                <div class="qr-info">İçerik (Content): <strong>question-8</strong></div>
+                <button class="btn-print" onclick="window.print()">Yazdır (Print)</button>
+            </div>
+            <div class="location-hint">
+                <strong>📍 Konum İpucu (Location Hint):</strong>
+                Sekizinci QR kod, kafeterya masasının altında gizlenmiştir. (The eighth QR code is hidden under the cafeteria table.)
+            </div>
+        </div>
+
+        <div class="qr-section">
+            <h3>9️⃣ Dokuzuncu Soru QR Kodu (Ninth Question QR Code)</h3>
+            <div class="qr-content">
+                <div class="qr-code-container">
+                    <div id="qr9"></div>
+                </div>
+                <div class="qr-info">İçerik (Content): <strong>question-9</strong></div>
+                <button class="btn-print" onclick="window.print()">Yazdır (Print)</button>
+            </div>
+            <div class="location-hint">
+                <strong>📍 Konum İpucu (Location Hint):</strong>
+                Dokuzuncu QR kod, bahçedeki ağacın gövdesine yapıştırılmıştır. (The ninth QR code is stuck on the trunk of the tree in the garden.)
+            </div>
+        </div>
+
+        <div class="qr-section">
+            <h3>🔟 Onuncu Soru QR Kodu (Tenth Question QR Code)</h3>
+            <div class="qr-content">
+                <div class="qr-code-container">
+                    <div id="qr10"></div>
+                </div>
+                <div class="qr-info">İçerik (Content): <strong>question-10</strong></div>
+                <button class="btn-print" onclick="window.print()">Yazdır (Print)</button>
+            </div>
+            <div class="location-hint">
+                <strong>📍 Konum İpucu (Location Hint):</strong>
+                Onuncu ve son QR kod, çıkış kapısının üzerinde bulunmaktadır. (The tenth and final QR code is located above the exit door.)
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>📋 Kullanım Talimatları (Usage Instructions)</h3>
+            <ol>
+                <li>Her QR kodu yazdırın veya ekran görüntüsü alın (Print each QR code or take a screenshot)</li>
+                <li>QR kodları belirtilen konumlara yerleştirin (Place QR codes in the specified locations)</li>
+                <li>QR kodların okunabilir olduğundan emin olun (yeterli ışık, temiz yüzey) (Make sure QR codes are readable (sufficient light, clean surface))</li>
+                <li>QR kodları yazdırırken en az 5x5 cm boyutunda olmalıdır (QR codes should be at least 5x5 cm when printing)</li>
+                <li>Kullanıcılar <code>index.html</code> sayfasını açarak oyuna başlayabilir (Users can start the game by opening the <code>index.html</code> page)</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // QR kodları oluştur (Generate QR codes)
+        function createQRCode(elementId, text) {
+            new QRCode(document.getElementById(elementId), {
+                text: text,
+                width: 200,
+                height: 200,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+
+        // Başlangıç QR kodu (Start QR code)
+        createQRCode("qr-start", "start");
+
+        // Soru QR kodları (1-10) (Question QR codes (1-10))
+        for (let i = 1; i <= 10; i++) {
+            createQRCode(`qr${i}`, `question-${i}`);
+        }
+    </script>
+</body>
+</html>
+
